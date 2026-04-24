@@ -27,12 +27,15 @@ The URL of your ReportPortal instance:
 - Example: `https://reportportal.example.com`
 - For local: `http://localhost:8080`
 
-### Project Name (`RP_PROJECT`) — Optional
+### Project Key (`RP_PROJECT`) — Optional
 
-This value is optional. When set, it defines the default project used for all requests; individual tools can still override it per request. To find your project name:
-1. Log into ReportPortal
-2. Check the URL: `https://your-rp-instance.com/ui/#PROJECT_NAME/...`
-3. Or find it in the top-left dropdown menu
+This value is optional. When set, it defines the default project key used for all requests; individual tools can still override it per call via the `projectKey` argument.
+
+The project key is the **URL-safe identifier** for your project — not its display name. Find it by looking at the ReportPortal URL after you open a project:
+```
+https://your-rp-instance.com/ui/#PROJECT_KEY/…
+```
+The segment after `#` is the project key to use. It is passed to the ReportPortal API as-is (only leading/trailing whitespace is trimmed; no other transformation is applied).
 
 ### API Token (`RP_API_TOKEN`)
 
@@ -480,14 +483,14 @@ The server needs to know where your ReportPortal is and how to authenticate. Set
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `RP_HOST` | The URL of your ReportPortal (e.g. https://myreportportal.example.com) | Yes |
-| `RP_PROJECT` | Your default project name in ReportPortal | Optional |
+| `RP_PROJECT` | Your default project key in ReportPortal (URL-safe identifier, e.g. `my_project`) | Optional |
 | `RP_API_TOKEN` | Your ReportPortal API token (for access) | Yes |
 
 **For HTTP mode:**
 
 Set `MCP_MODE=http` and configure the following:
 - `RP_HOST`: Required - The URL of your ReportPortal
-- `RP_PROJECT`: Optional - Your default project name
+- `RP_PROJECT`: Optional - Your default project key (URL-safe identifier)
 - `MCP_SERVER_PORT`: Optional - HTTP server port (default: 8080)
 - `MCP_SERVER_HOST`: Optional - HTTP bind host (default: empty)
 - Authentication tokens must be passed per-request via `Authorization: Bearer <token>` header
@@ -849,7 +852,7 @@ DEBUG: Calling ReportPortal API: /api/v1/project/launch
 | AI shows no ReportPortal tools | MCP server not connected | Check configuration file syntax, restart AI assistant |
 | "Connection refused" error | Server not running or wrong port | Verify server is running: `docker ps` or check process |
 | "401 Unauthorized" | Invalid API token | Regenerate token in ReportPortal profile |
-| "403 Forbidden" | Token valid but no project access | Check `RP_PROJECT` name, verify user has access |
+| "403 Forbidden" | Token valid but no project access | Check `RP_PROJECT` key (must match the URL segment, not the display name), verify user has access |
 | "404 Not Found" | Wrong endpoint URL | Ensure remote URL ends with `/mcp/` |
 | Empty results from queries | No data in ReportPortal | Run some tests first to populate data |
 | Timeout errors | Network issues or slow ReportPortal | Check network connectivity, ReportPortal performance |

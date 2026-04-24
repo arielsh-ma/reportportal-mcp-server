@@ -2,12 +2,32 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
+
+// ProjectKeySchema returns a JSON schema for the projectKey MCP tool parameter.
+// Default is set only when defaultProjectKey is non-empty (JSON default is omitted otherwise).
+func ProjectKeySchema(defaultProjectKey string) *jsonschema.Schema {
+	s := &jsonschema.Schema{
+		Type: "string",
+		Description: "URL-safe project key: the identifier from ReportPortal URLs after the '#' " +
+			"(not the project display name).",
+	}
+	if defaultProjectKey != "" {
+		b, err := json.Marshal(defaultProjectKey)
+		if err != nil {
+			panic(fmt.Sprintf("failed to marshal JSON: %v", err))
+		}
+		s.Default = b
+	}
+	return s
+}
 
 // ApplyPaginationOptions applies pagination to an API request from typed values.
 // Zero values for page and pageSize fall back to defaults.
